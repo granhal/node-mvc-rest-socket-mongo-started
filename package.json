@@ -1,0 +1,23 @@
+{
+  "name": "node-mvc-rest-socket-mongo-started",
+  "version": "0.0.1",
+  "description": "Is a repo to started server in NODE with pattern MVC with REST, SOCKETS and MONGODB",
+  "main": "app.js",
+  "author": "alberto gutierrez <haldev@icloud.com>",
+  "url": "https://github.com/granhal/node-mvc-rest-socket-mongo-started",
+  "man": "README.md",
+  "engines": {
+    "node": "^5.8.0",
+    "mongodb": "^3.2"
+  },
+  "scripts": {
+    "start": "sudo node app.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.1",
+    "express": "^4.13.4",
+    "mongoose": "^4.4.19",
+    "socket.io": "^1.4.6"
+  },
+  "license": "MIT"
+}
