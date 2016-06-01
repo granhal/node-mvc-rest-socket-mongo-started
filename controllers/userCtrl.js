@@ -64,7 +64,7 @@ exports.updateUser = function(req, res) {
     });
 };
 
-//DELETE - Delete a TVShow with specified ID
+//DELETE - Delete a user with specified ID
 exports.deleteUser = function(req, res) {
     USERS.findById(req.params.id, function(err, user) {
         user.remove(function(err) {

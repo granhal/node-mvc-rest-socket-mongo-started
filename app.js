@@ -22,7 +22,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 //app.use(methodOverride());
 
-// Import Models and controllers
+// Import models and controllers
 var userModel  = require('./models/userModel')(mongoose);
 var userCtrl = require('./controllers/userCtrl');
 

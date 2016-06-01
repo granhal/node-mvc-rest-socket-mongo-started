@@ -4,6 +4,7 @@
 
 exports = module.exports = function(mongoose) {
 
+    //create Schema to Users in database MONGODB
     var users = new mongoose.Schema({
         date: {
             type: Date,
