@@ -1,66 +1,78 @@
 /**
- * Created by alberto on 21/3/16.
+ * Created by alberto on 22/3/16.
  */
 
-var express         = require("express"),
-    app             = express(),
-    bodyParser      = require("body-parser"),
-//methodOverride  = require("method-override"),
-    path            = require('path'),
-    http            = require('http'),
-    mongoose        = require('mongoose'),
-    socketio        = require('socket.io');
+var mongoose = require('mongoose');
+var USERS = mongoose.model('users');
 
-// Connection to DB with mongoose
-mongoose.connect('mongodb://localhost/example', function(err, res) {
-    if(err) throw err;
-    console.log('connected to database');
-});
+//GET - Return all users in the DB
+exports.findAll = function(req, res) {
+    USERS.find(function(err, users) {
+        if(err) return res.status(500).send(err.message);
+        console.log('GET /users');
+        res.status(200).jsonp(users);
+    });
+};
 
-// Middlewares
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-//app.use(methodOverride());
+//GET - Return for ID
+exports.findById = function(req, res) {
+    USERS.findById(req.params.id, function(err, user) {
+        if(err) return res.status(500).send(err.message);
+        console.log('GET /user/' + req.params.id);
+        res.status(200).jsonp(user);
+    });
+};
 
-// Import models and controllers
-var userModel  = require('./models/userModel')(mongoose);
-var userCtrl = require('./controllers/userCtrl');
+//POST - Add new user
+exports.addUser = function(req, res) {
 
-app.use(express.static(path.resolve(__dirname, 'view')));
+    var user = new USERS({
+        name: req.body.name,
+        surname: req.body.surname,
+        dni: req.body.dni,
+        birthdate: req.body.birthdate,
+        address: req.body.address,
+        telephoneNumber: req.body.telephoneNumber,
+        email: req.body.email
+    });
 
-// API routes/views!
-var apiRest = express.Router();
+    user.save(function(err, user) {
+        if(err) return res.status(500).send( err.message);
+        console.log('POST /user/' + req.params.id);
+        res.status(200).jsonp(user);
+    });
+};
 
-apiRest.route('/users')
-    .get(userCtrl.findAll)
-    .post(userCtrl.addUser);
+//PUT - Update a register already exists
+exports.updateUser = function(req, res) {
+    USERS.findById(req.params.id, function(err, user) {
+        user.name   = req.body.name;
+        user.surname    = req.body.surname;
+        user.dni = req.body.dni;
+        user.birthdate  = req.body.birthdate;
+        user.address = req.body.address;
+        user.telephoneNumber   = req.body.telephoneNumber;
+        user.email = req.body.email;
 
-apiRest.route('/user/:id')
-    .get(userCtrl.findById)
-    .put(userCtrl.updateUser)
-    .delete(userCtrl.deleteUser);
+        user.save(function(err) {
+            if(err) return res.status(500).send(err.message);
+            console.log('PUT /user/' + req.params.id);
+            res.status(200).jsonp(user);
+        });
+    });
+};
 
-app.use('/api', apiRest);
+//DELETE - Delete a user with specified ID
+exports.deleteUser = function(req, res) {
+    USERS.findById(req.params.id, function(err, user) {
+        if(user) {
+            user.remove(function (err) {
+                if (err) return res.status(500).send(err.message);
+                console.log('DELETE /user/' + req.params.id);
+                res.status(200).send();
+            })
+        }
+    });
+};
 
-// Start server
-var env = "dev";
-var IP;
-
-switch (env){
-    case "dev":
-        IP = "localhost";
-        break;
-    case "pro":
-        IP = "0.0.0.0";
-        break;
-}
-var server = http.createServer(app);
-server.listen(process.env.PORT || 80, process.env.IP || IP, function() {
-    var addr = server.address();
-    console.log("server listening at", addr.address + ":" + addr.port);
-});
-
-
-//Example received and send data with socket.io
-var io = socketio.listen(server);
-var socketExample = require('./sockets/socketExample')(io);
+console.log("user controller is loaded");
